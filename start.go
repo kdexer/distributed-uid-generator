@@ -5,9 +5,7 @@ import (
 	"net/http"
 )
 
-/**
-  project start up method
- */
+// start up
 func main() {
 	router := httprouter.New()
 	startError := http.ListenAndServe(":8080", router)
