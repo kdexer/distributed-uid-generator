@@ -9,7 +9,7 @@ package bits
 // maxSequence means the max value for sequence
 // timestampShift means should move bits used for generator uid
 // workerIdShift means should move bits used for generator uid
-type idBits struct {
+type IdBits struct {
 	signBits uint8
 	timestampBits uint8
 	workerIdBits uint8
@@ -24,28 +24,28 @@ type idBits struct {
 }
 
 // allocate uid,the highest bit always zero mean allocate uid always positive
-func (idBits *idBits) Allocate(timestamp uint64,workid uint64,seq uint64) uint64 {
+func (idBits *IdBits) Allocate(timestamp uint64,workid uint64,seq uint64) uint64 {
 	return timestamp << idBits.timestampShift | workid << idBits.workerIdShift | seq
 }
 
 // get max Delta Seconds
-func (idBits *idBits) GetMaxDeltaSeconds() uint64 {
+func (idBits *IdBits) GetMaxDeltaSeconds() uint64 {
 	return idBits.maxDeltaSeconds
 }
 
 // get max work id
-func (idBits *idBits) GetMaxWorkerId() uint64 {
+func (idBits *IdBits) GetMaxWorkerId() uint64 {
 	return idBits.maxWorkerId
 }
 
 // get max sequence
-func (idBits *idBits) GetMaxSequence() uint64 {
+func (idBits *IdBits) GetMaxSequence() uint64 {
 	return idBits.maxSequence
 }
 
 // get the spec timestampBits,workerIdBits,sequenceBits bit_allocator reference
-func New(tb uint8,wib uint8,sb uint8) *idBits {
-	return &idBits{
+func New(tb uint8,wib uint8,sb uint8) *IdBits {
+	return &IdBits{
 		signBits:1,
 		timestampBits:tb,
 		workerIdShift:wib,
@@ -59,8 +59,8 @@ func New(tb uint8,wib uint8,sb uint8) *idBits {
 }
 
 // get default bit_allocator reference
-func NewDefault() *idBits {
-	return &idBits{
+func NewDefault() *IdBits {
+	return &IdBits{
 		signBits:1,
 		timestampBits:28,
 		workerIdBits:22,
