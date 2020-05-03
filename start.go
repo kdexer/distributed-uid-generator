@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"distributed-uid-generator/config"
-	"distributed-uid-generator/generator"
+	"github.com/kdexer/distributed-uid-generator/config"
+	"github.com/kdexer/distributed-uid-generator/generator"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"io"

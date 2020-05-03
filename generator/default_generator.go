@@ -1,10 +1,16 @@
 package generator
 
 import (
-	"distributed-uid-generator/bits"
+	"github.com/kdexer/distributed-uid-generator/bits"
+	"sync"
 	"time"
 )
 
+var mu sync.Mutex
+
+/*
+	default generator
+ */
 type DefaultGenerator struct {
 	sequence  int64
 	workid    int64
@@ -12,6 +18,7 @@ type DefaultGenerator struct {
 	epochStr  string
 	*bits.IdBits
 }
+
 
 func New(wid int64, epoch string, tbit uint8, wbit uint8, sbit uint8) (dg *DefaultGenerator) {
 	allocator := bits.NewBitAllocator(tbit, wbit, sbit)
@@ -28,6 +35,9 @@ func New(wid int64, epoch string, tbit uint8, wbit uint8, sbit uint8) (dg *Defau
 }
 
 func (dg *DefaultGenerator) GetNextId() int64 {
+	//todo use channel
+	mu.Lock()
+	defer mu.Unlock()
 	currentTimestamp := getCurrentTimestamp()
 	lastTimestamp := dg.timestamp
 	if currentTimestamp < lastTimestamp {
@@ -44,10 +54,6 @@ func (dg *DefaultGenerator) GetNextId() int64 {
 	}
 	dg.timestamp = currentTimestamp
 	return dg.IdBits.Allocate(getDuration(dg.epochStr, currentTimestamp), dg.workid, dg.sequence)
-}
-
-func (dg *DefaultGenerator) ParseId() *IdDetail {
-	return nil
 }
 
 // get current time sec since January 1, 1970 UTC.
