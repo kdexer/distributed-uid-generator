@@ -1,15 +1,13 @@
 package main
 
 import (
-	"bufio"
+	"fmt"
+	"github.com/go-yaml/yaml"
+	"github.com/julienschmidt/httprouter"
 	"github.com/kdexer/distributed-uid-generator/config"
 	"github.com/kdexer/distributed-uid-generator/generator"
-	"fmt"
-	"github.com/julienschmidt/httprouter"
-	"io"
 	"net/http"
 	"os"
-	"strings"
 )
 
 var nextId generator.NextId
@@ -20,38 +18,31 @@ func genIdHandler(rw http.ResponseWriter, req *http.Request, params httprouter.P
 	fmt.Fprint(rw, uid)
 }
 
-// read config info to map
-func readConfig(path string) map[string]string {
-	file,error := os.Open(path)
-	if (nil != error) {
+// read config file to YamlConfig
+func readConfig(path string) *config.YamlConfig {
+	file,readErr := os.Open(path)
+	if nil != readErr {
 		panic("read config file error")
 	}
-	configMap := make(map[string]string)
-	reader := bufio.NewReader(file)
-	for {
-		line,_, readErr := reader.ReadLine()
-		if nil != readErr {
-			if (readErr == io.EOF) {
-				break
-			}
-			panic("read config file error")
-		}
-		lineStr := string(line)
-		index := strings.Index(lineStr, ":")
-		// get config key val
-		key := lineStr[:index]
-		val := lineStr[index+1:]
-		configMap[key] = val
+	yamlConfig := new(config.YamlConfig)
+	decoder := yaml.NewDecoder(file)
+	decoder.SetStrict(true)
+	decoderErr := decoder.Decode(yamlConfig)
+	if nil != decoderErr {
+		panic("decode yaml config file error")
 	}
-	return configMap
+	return yamlConfig
 }
 
 /**
  * 启动函数
  */
 func main() {
-	config := config.New()
-	dg := generator.New(1, config.EpochDate(), uint8(config.Timebit()), uint8(config.Workbit()), uint8(config.Sequencesbit()))
+	yamlConfig := readConfig("resources/config.yaml")
+	dg := generator.New(1, yamlConfig.Config.Date.EpochDate,
+		yamlConfig.Config.Bits.Time,
+		yamlConfig.Config.Bits.Worker,
+		yamlConfig.Config.Bits.Sequences)
 	nextId = dg
 	router := httprouter.New()
 	router.GET("/gen/id", genIdHandler)
