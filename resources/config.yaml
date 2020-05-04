@@ -1,0 +1,7 @@
+config:
+  date:
+    epochDate: 2019-04-05
+  bits:
+    time: 28
+    worker: 22
+    sequences: 13

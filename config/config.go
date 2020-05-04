@@ -12,6 +12,22 @@ const (
 	CONFIG_FILE_PATH string = "./resources/config"
 )
 
+/*
+	yaml配置文件的结构体
+ */
+type YamlConfig struct {
+	Config struct {
+		Date struct{
+			EpochDate string `yaml:"epochDate"`
+		}
+		Bits struct{
+			Time uint8 `yaml:"time"`
+			Worker uint8 `yaml:"worker"`
+			Sequences uint8 `yaml:"sequences"`
+		}
+	}
+}
+
 /**
  * 配置信息结构体
  */
