@@ -1,4 +1,8 @@
 config:
+  server:
+    port: 8080
+    path:
+      generator: /gen/id
   date:
     epochDate: 2019-04-05
   bits:
