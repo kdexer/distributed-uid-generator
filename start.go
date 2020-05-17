@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/julienschmidt/httprouter"
+	"github.com/kdexer/distributed-uid-generator/bits"
 	"github.com/kdexer/distributed-uid-generator/config"
 	"github.com/kdexer/distributed-uid-generator/generator"
 	"github.com/kdexer/distributed-uid-generator/routers"
@@ -14,8 +15,10 @@ import (
 func main() {
 	yamlConfig := config.ReadConfig(config.CONFIG_FILE_PATH)
 	Config := yamlConfig.Config
-	// todo 处理worker的问题
-	dg := generator.New(1,
+	// 从redis中获取workid
+	client := config.GetRedisClient(yamlConfig)
+	workId := bits.GetWorkId(yamlConfig, client)
+	dg := generator.New(workId,
 		Config.Date.EpochDate,
 		Config.Bits.Time,
 		Config.Bits.Worker,

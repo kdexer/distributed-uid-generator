@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/go-redis/redis"
 	"github.com/go-yaml/yaml"
 	"log"
 	"os"
@@ -18,8 +19,13 @@ type YamlConfig struct {
 		Server struct{
 			Port string `yaml:"port"`
 			Path struct{
-				Generator string
+				Generator string `yaml:"generator"`
 			}
+		}
+		Redis struct{
+			Server string `yaml:"server"`
+			Password string `yaml:"password"`
+			DB int  `yaml:"db"`
 		}
 		Date struct{
 			EpochDate string `yaml:"epochDate"`
@@ -33,12 +39,13 @@ type YamlConfig struct {
 }
 
 
-// read config file to YamlConfig
+/*
+	从yamlConfig读取配置信息
+ */
 func ReadConfig(path string) *YamlConfig {
 	file,readErr := os.Open(path)
 	if nil != readErr {
 		log.Fatalf("err is %v", readErr)
-
 		panic("read config file error")
 	}
 	yamlConfig := new(YamlConfig)
@@ -49,4 +56,17 @@ func ReadConfig(path string) *YamlConfig {
 		panic("decode yaml config file error")
 	}
 	return yamlConfig
+}
+
+/*
+	获取redis客户端
+ */
+func GetRedisClient(config *YamlConfig) *redis.Client {
+	redisConfig := config.Config.Redis
+	options := new(redis.Options)
+	options.Addr = redisConfig.Server
+	options.Password = redisConfig.Password
+	options.DB = redisConfig.DB
+	client := redis.NewClient(options)
+	return client
 }

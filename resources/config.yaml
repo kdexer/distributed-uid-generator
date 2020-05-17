@@ -3,6 +3,10 @@ config:
     port: 8080
     path:
       generator: /gen/id
+  redis:
+    server: "localhost:6379"
+    password: ""
+    db: 0
   date:
     epochDate: 2019-04-05
   bits:
