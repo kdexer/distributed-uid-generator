@@ -18,7 +18,6 @@ func NewGeneratorRouter(generator generator.NextId) *GeneratorRouter {
 func (gr GeneratorRouter) GetHandlerFunction() httprouter.Handle {
 	handler := func (rw http.ResponseWriter,re *http.Request, pa httprouter.Params) {
 		uid := gr.generator.GetNextId()
-		fmt.Println(uid)
 		fmt.Fprint(rw, uid)
 	}
 	return handler
